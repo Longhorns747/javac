@@ -13,7 +13,7 @@ def home():
 @app.route("/process", methods=['POST'])
 def process_java():
     #Make a randomly generated directory for latex compilation
-    staticFilepath = 'static/javaComp/' + random.choice(string.letters) + random.choice(string.letters) + random.choice(string.letters) + '/'
+    staticFilepath = '/var/www/javac/static/javaComp/' + random.choice(string.letters) + random.choice(string.letters) + random.choice(string.letters) + '/'
 
     d = os.path.dirname(staticFilepath)
     if not os.path.exists(d):
