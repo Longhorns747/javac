@@ -8,10 +8,7 @@ ALLOWED_EXTENSIONS = set(['java'])
 
 @app.route("/")
 def home():
-    state = ''.join(random.choice(string.ascii_uppercase + string.digits)
-                  for x in xrange(32))
-    session['state'] = state
-    return render_template("index.html", state=state)
+    return render_template("index.html")
 
 @app.route("/process", methods=['POST'])
 def process_java():
