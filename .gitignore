@@ -58,3 +58,4 @@ venv/
 
 #cfg
 *.cfg
+javaComp/*
