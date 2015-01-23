@@ -13,7 +13,7 @@ def home():
 @app.route("/process", methods=['POST'])
 def process_java():
     #Make a randomly generated directory for latex compilation
-    staticFilepath = '/var/www/javac/static/javaComp/' + random.choice(string.letters) + random.choice(string.letters) + random.choice(string.letters) + '/'
+    staticFilepath = 'javaComp/' + random.choice(string.letters) + random.choice(string.letters) + random.choice(string.letters) + '/'
 
     d = os.path.dirname(staticFilepath)
     if not os.path.exists(d):
@@ -38,16 +38,21 @@ def process_java():
     #Compile LaTeX
     bashCommand = "javac " + filename;
     import subprocess
-    process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE, cwd=staticFilepath)
-    output = process.communicate()[0]
+    try:
+        subprocess.check_output(bashCommand.split(), stderr=subprocess.STDOUT, cwd=staticFilepath)
+    except subprocess.CalledProcessError as err:
+        output = err.output
+        import shutil
+        shutil.rmtree(staticFilepath)
+        print "Output: " + output
+        return render_template("success.html", compiler_msg=output)
 
-    #f = open(staticFilepath + '/' + filename.rsplit('.', 1)[0] + '.html')
-    #finalHTML = f.read()
+    #output = subprocess.Popen.stdout
 
     import shutil
     shutil.rmtree(staticFilepath)
-
-    return render_template("success.html", compiler_msg=output)
+    print "No error"
+    return render_template("success.html", compiler_msg="No Errors!")
 
 @app.route("/back", methods=['GET'])
 def back_to_input():
