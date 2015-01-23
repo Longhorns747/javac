@@ -57,6 +57,5 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
-app.secret_key = open('static/app_key.cfg', 'r+').read()
 if __name__ == "__main__":
     app.run(debug="true")
