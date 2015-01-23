@@ -12,7 +12,7 @@ def home():
 
 @app.route("/process", methods=['POST'])
 def process_java():
-    #Make a randomly generated directory for latex compilation
+    #Make a randomly generated directory for java compilation
     staticFilepath = 'javaComp/' + random.choice(string.letters) + random.choice(string.letters) + random.choice(string.letters) + '/'
 
     d = os.path.dirname(staticFilepath)
@@ -31,27 +31,22 @@ def process_java():
     else:
         return render_template("error.html", message="Oh no D:! Something went wrong :( Please try again!")
 
-    #f = open(staticFilepath + '/latex.tex', 'w')
-    #f.write(latex_input)
-    #f.close()
-
-    #Compile LaTeX
+    #Compile Java, catch any errors
     bashCommand = "javac " + filename;
     import subprocess
     try:
         subprocess.check_output(bashCommand.split(), stderr=subprocess.STDOUT, cwd=staticFilepath)
     except subprocess.CalledProcessError as err:
         output = err.output
+
+        #Clean Up
         import shutil
         shutil.rmtree(staticFilepath)
-        print "Output: " + output
         return render_template("success.html", compiler_msg=output)
 
-    #output = subprocess.Popen.stdout
-
+    #Clean Up
     import shutil
     shutil.rmtree(staticFilepath)
-    print "No error"
     return render_template("success.html", compiler_msg="No Errors!")
 
 @app.route("/back", methods=['GET'])
