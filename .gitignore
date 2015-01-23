@@ -55,3 +55,6 @@ target/
 
 #venv
 venv/
+
+#cfg
+*.cfg
