@@ -62,6 +62,7 @@ def allowed_file(filename):
 
 def unzip(filename, filepath):
     if ".zip" in filename:
+        #Run Unzip Command
         bashCommand = "unzip " + filename;
         import subprocess
         try:
