@@ -31,7 +31,7 @@ def process_java():
     else:
         return render_template("error.html", message="Oh no D:! Something went wrong :( Please try again!")
 
-    filename = unzip(file, staticFilepath)
+    filename = unzip(filename, staticFilepath)
 
     #Compile Java, catch any errors
     bashCommand = "javac " + filename;
@@ -60,11 +60,14 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
-def unzip(file, filepath):
-    if ".zip" in file.filename:
-        bashCommand = "unzip " + file.filename;
+def unzip(filename, filepath):
+    if ".zip" in filename:
+        bashCommand = "unzip " + filename;
         import subprocess
-        process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE, cwd=filepath)
+        try:
+            subprocess.check_output(bashCommand.split(), stderr=subprocess.STDOUT, cwd=staticFilepath)
+        except subprocess.CalledProcessError as err:
+            output = err.output
 
         #Get names of java files in dir
         from os import listdir
@@ -79,7 +82,7 @@ def unzip(file, filepath):
 
         return res
     else:
-        return file.filename
+        return filename
 
 if __name__ == "__main__":
     app.run(debug="true")
