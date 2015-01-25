@@ -40,8 +40,6 @@ def process_java():
         subprocess.check_output(bashCommand.split(), stderr=subprocess.STDOUT, cwd=staticFilepath)
     except subprocess.CalledProcessError as err:
         output = err.output
-        import pdb
-        pdb.set_trace()
 
         #Clean Up
         import shutil
