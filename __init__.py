@@ -61,7 +61,7 @@ def allowed_file(filename):
 
 def unzip(file, filepath):
     bashCommand = "unzip " + file.filename;
-    print bashCommand
+    print bashCommand + "Filepath: " + filepath
     import subprocess
     process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE, cwd=filepath)
 
