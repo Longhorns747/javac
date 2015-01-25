@@ -66,7 +66,17 @@ def unzip(file, filepath):
         import subprocess
         process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE, cwd=filepath)
 
-        return "*.java"
+        #Get names of java files in dir
+        from os import listdir
+        from os.path import isfile, join
+        onlyfiles = [ f for f in listdir(filepath) if isfile(join(filepath,f)) ]
+        res = ""
+
+        for file in onlyfiles:
+            if ".java" in file:
+                res += file + " "
+
+        return res
     else:
         return file.filename
 
