@@ -35,6 +35,7 @@ def process_java():
 
     #Compile Java, catch any errors
     bashCommand = "javac " + filename;
+    print bashCommand
     import subprocess
     try:
         subprocess.check_output(bashCommand.split(), stderr=subprocess.STDOUT, cwd=staticFilepath)
@@ -60,11 +61,14 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 def unzip(file, filepath):
-    bashCommand = "unzip " + file.filename;
-    import subprocess
-    process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE, cwd=filepath)
+    if ".zip" in file.filename:
+        bashCommand = "unzip " + file.filename;
+        import subprocess
+        process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE, cwd=filepath)
 
-    return "*.java"
+        return "*.java"
+    else:
+        return file.filename
 
 if __name__ == "__main__":
     app.run(debug="true")
