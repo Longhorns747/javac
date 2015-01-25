@@ -65,7 +65,7 @@ def unzip(filename, filepath):
         bashCommand = "unzip " + filename;
         import subprocess
         try:
-            subprocess.check_output(bashCommand.split(), stderr=subprocess.STDOUT, cwd=staticFilepath)
+            subprocess.check_output(bashCommand.split(), stderr=subprocess.STDOUT, cwd=filepath)
         except subprocess.CalledProcessError as err:
             output = err.output
 
