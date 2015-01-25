@@ -60,7 +60,7 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 def unzip(file, filepath):
-    bashCommand = "unzip " + filename;
+    bashCommand = "unzip " + file.filename;
     import subprocess
     process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE, cwd=filepath)
 
