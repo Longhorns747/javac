@@ -4,7 +4,7 @@ import os
 from werkzeug import secure_filename
 app = Flask(__name__)
 
-ALLOWED_EXTENSIONS = set(['java'])
+ALLOWED_EXTENSIONS = set(['java', 'zip'])
 
 @app.route("/")
 def home():
@@ -31,6 +31,8 @@ def process_java():
     else:
         return render_template("error.html", message="Oh no D:! Something went wrong :( Please try again!")
 
+    filename = unzip(file, staticFilepath)
+
     #Compile Java, catch any errors
     bashCommand = "javac " + filename;
     import subprocess
@@ -56,6 +58,13 @@ def back_to_input():
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+
+def unzip(file, filepath):
+    bashCommand = "unzip " + filename;
+    import subprocess
+    process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE, cwd=filepath)
+
+    return "*.java"
 
 if __name__ == "__main__":
     app.run(debug="true")
