@@ -70,6 +70,7 @@ def unzip(file, filepath):
         from os import listdir
         from os.path import isfile, join
         onlyfiles = [ f for f in listdir(filepath) if isfile(join(filepath,f)) ]
+        print "dir: " + filepath + " Files in dir: " + onlyfiles
         res = ""
 
         for file in onlyfiles:
