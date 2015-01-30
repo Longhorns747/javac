@@ -4,7 +4,7 @@ import os, shutil, subprocess
 from werkzeug import secure_filename
 app = Flask(__name__)
 
-ALLOWED_EXTENSIONS = set(['java', 'zip'])
+ALLOWED_EXTENSIONS = set(['zip'])
 
 @app.route("/")
 def home():
