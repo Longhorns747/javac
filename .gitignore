@@ -59,3 +59,4 @@ venv/
 #cfg
 *.cfg
 javaComp/*
+.DS_Store

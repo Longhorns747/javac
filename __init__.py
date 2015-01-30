@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, session
 import requests, random, string
-import os
+import os, shutil, subprocess
 from werkzeug import secure_filename
 app = Flask(__name__)
 
@@ -25,6 +25,8 @@ def process_java():
 
     file = request.files['java']
     filename = ""
+
+    #Get secure_filename for files
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         file.save(os.path.join(staticFilepath, filename))
@@ -34,25 +36,13 @@ def process_java():
     print filename
 
     java_files = unzip(filename, staticFilepath)
-    #Compile Java, catch any errors
-    bashCommand = "javac " + java_files;
-    print bashCommand
-    path = staticFilepath + filename[:-4]
-    import subprocess
-    try:
-        subprocess.check_output(bashCommand.split(), stderr=subprocess.STDOUT, cwd=path)
-    except subprocess.CalledProcessError as err:
-        output = err.output
-
-        #Clean Up
-        import shutil
-        shutil.rmtree(staticFilepath)
-        return render_template("success.html", compiler_msg=output)
+    path = staticFilepath + filename[:-4] #Chop off .zip extension
+    compiler_output = compile(java_files, path)
+    checkstyle_output = checkstyle(java_files, path)
 
     #Clean Up
-    import shutil
     shutil.rmtree(staticFilepath)
-    return render_template("success.html", compiler_msg="No Errors!")
+    return render_template("success.html", compiler_msg=compiler_output, checkstyle_msg=checkstyle_output)
 
 @app.route("/back", methods=['GET'])
 def back_to_input():
@@ -66,7 +56,7 @@ def unzip(filename, filepath):
     print filepath
     if ".zip" in filename:
         #Run Unzip Command
-        bashCommand = "unzip " + filename;
+        bashCommand = "unzip " + filename
         import subprocess
         try:
             subprocess.check_output(bashCommand.split(), stderr=subprocess.STDOUT, cwd=filepath)
@@ -89,6 +79,36 @@ def unzip(filename, filepath):
         return res
     else:
         return filename
+
+def compile(java_filenames, filepath):
+    #Compile Java, catch any errors
+    bashCommand = "javac " + java_filenames
+    print bashCommand
+    output = "No Errors!"
+
+    try:
+        subprocess.check_output(bashCommand.split(), stderr=subprocess.STDOUT, cwd=filepath)
+    except subprocess.CalledProcessError as err:
+        output = err.output
+
+    return output
+
+def checkstyle(java_filenames, filepath):
+    bashCommand = "java -jar checkstyle-6.0-all.jar -c cs1331-checkstyle.xml " + java_filenames
+
+    shutil.copy("javaComp/checkstyle-6.0-all.jar", filepath)
+    shutil.copy("javaComp/cs1331-checkstyle.xml", filepath)
+
+    print bashCommand
+    output = "No Errors!"
+
+    try:
+        output = subprocess.check_output(bashCommand.split(), stderr=subprocess.STDOUT, cwd=filepath)
+    except subprocess.CalledProcessError as err:
+        output = err.output
+
+    return output
+
 
 if __name__ == "__main__":
     app.run(debug="true")
