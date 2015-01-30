@@ -31,14 +31,16 @@ def process_java():
     else:
         return render_template("error.html", message="Oh no D:! Something went wrong :( Please try again!")
 
-    filename = unzip(filename, staticFilepath)
+    print filename
 
+    java_files = unzip(filename, staticFilepath)
     #Compile Java, catch any errors
-    bashCommand = "javac " + filename;
+    bashCommand = "javac " + java_files;
     print bashCommand
+    path = staticFilepath + filename[:-4]
     import subprocess
     try:
-        subprocess.check_output(bashCommand.split(), stderr=subprocess.STDOUT, cwd=staticFilepath)
+        subprocess.check_output(bashCommand.split(), stderr=subprocess.STDOUT, cwd=path)
     except subprocess.CalledProcessError as err:
         output = err.output
 
@@ -61,6 +63,7 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 def unzip(filename, filepath):
+    print filepath
     if ".zip" in filename:
         #Run Unzip Command
         bashCommand = "unzip " + filename;
@@ -69,12 +72,14 @@ def unzip(filename, filepath):
             subprocess.check_output(bashCommand.split(), stderr=subprocess.STDOUT, cwd=filepath)
         except subprocess.CalledProcessError as err:
             output = err.output
+            print output
 
         #Get names of java files in dir
         from os import listdir
         from os.path import isfile, join
-        onlyfiles = [ f for f in listdir(filepath) if isfile(join(filepath,f)) ]
-        print "dir: " + filepath + " Files in dir: " + str(onlyfiles)
+        full_path = filepath + filename[:-4]
+        onlyfiles = [ f for f in listdir(full_path) if isfile(join(full_path,f)) ]
+        print "dir: " + full_path + " Files in dir: " + str(onlyfiles)
         res = ""
 
         for file in onlyfiles:
