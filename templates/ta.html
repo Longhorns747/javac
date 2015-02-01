@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>CS 1331 javac</title>
+	<!-- Bootstrap -->
+	<link href="{{ url_for('static', filename="css/bootstrap.min.css") }}" rel="stylesheet">
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="{{ url_for('static', filename="js/jquery-1.11.1.min.js") }}"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="{{ url_for('static', filename="js/bootstrap.min.js") }}"></script>
+</head>
+<body style="padding-bottom: 70px">
+
+<div class='container-fluid'>
+	<div class="jumbotron" style="padding: 0.5em 0.6em;">
+		<div class='text-center'>
+			<h1>CS 1331 javac</h1>
+
+			<p>
+    			Compile your assignments online and get immediate helpful feedback!
+			</p>
+		</div>
+	</div>
+
+	<div class="row center-block" style="padding-top: 30px;">
+		<div class="col-md-6 col-md-offset-3">
+			<div class="text-center well">
+				Submit your junit test and a helper file (if needed) to make it run. Submit nothing to clear all JUnits on the server.
+				<br><br>
+				<form action="{{ url_for('ta_upload') }}" enctype="multipart/form-data" method=post class="form">
+					<div class='section-1'>
+						<div class="form-group">
+							<label for="junit">JUnit</label>
+							<input type="file" name="junit">
+
+							<label for="junit">Helper Files (Optional)</label>
+							<input type="file" name="helper">
+
+							<label for="password">Password</label>
+							<input type="password" name="password" class="form-control">
+						</div>
+					</div>
+					<button type="submit" id='section-5' class="btn btn-default btn-lg">
+						Submit!
+					</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+</body>
+</html>
