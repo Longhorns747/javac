@@ -39,10 +39,11 @@ def process_java():
     path = staticFilepath + filename[:-4] #Chop off .zip extension
     compiler_output = compile(java_files, path)
     checkstyle_output = checkstyle(java_files, path)
+    junit_output = junit(java_files, "LinearAlgebraTest", "Solution.java", path)
 
     #Clean Up
     shutil.rmtree(staticFilepath)
-    return render_template("success.html", compiler_msg=compiler_output, checkstyle_msg=checkstyle_output)
+    return render_template("success.html", compiler_msg=compiler_output, checkstyle_msg=checkstyle_output, junit_msg=junit_output)
 
 @app.route("/back", methods=['GET'])
 def back_to_input():
@@ -98,6 +99,26 @@ def checkstyle(java_filenames, filepath):
 
     shutil.copy("javaComp/checkstyle-6.0-all.jar", filepath)
     shutil.copy("javaComp/cs1331-checkstyle.xml", filepath)
+
+    print bashCommand
+    output = "No Errors!"
+
+    try:
+        output = subprocess.check_output(bashCommand.split(), stderr=subprocess.STDOUT, cwd=filepath)
+    except subprocess.CalledProcessError as err:
+        output = err.output
+
+    return output
+
+def junit(java_filenames, junit_name, junit_helpers, filepath):
+    shutil.copy("javaComp/junit-4.11.jar", filepath)
+    shutil.copy("javaComp/hamcrest-core-1.3.jar", filepath)
+    shutil.copy("javaComp/" + junit_helpers, filepath)
+    shutil.copy("javaComp/" + junit_name + ".java", filepath)
+
+    print compile("-cp .:junit-4.11.jar:hamcrest-core-1.3.jar " + java_filenames + junit_helpers + " " + junit_name + ".java", filepath)
+
+    bashCommand = "java -cp .:junit-4.11.jar:hamcrest-core-1.3.jar org.junit.runner.JUnitCore " + junit_name
 
     print bashCommand
     output = "No Errors!"
