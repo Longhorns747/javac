@@ -74,6 +74,7 @@ def ta_upload():
 
     #Reset JUnit and Helper variables
     if not junit and not helper:
+        print "DID NOT GET FILES"
         #Delete old JUnit Tests
         if os.path.exists(COMP_DIR + junit_name + ".java"):
             os.remove(COMP_DIR + junit_name + ".java")
