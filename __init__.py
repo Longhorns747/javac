@@ -113,6 +113,8 @@ def ta_upload():
     else:
         junit_helper_files = ""
 
+    print junit_name
+
     return render_template("index.html")
 
 def allowed_file(filename):
@@ -179,7 +181,10 @@ def checkstyle(java_filenames, filepath):
 def junit(java_filenames, junit_name, junit_helpers, filepath):
     shutil.copy(COMP_DIR + "junit-4.11.jar", filepath)
     shutil.copy(COMP_DIR + "hamcrest-core-1.3.jar", filepath)
-    shutil.copy(COMP_DIR + junit_helpers, filepath)
+
+    if junit_helpers != "":
+        shutil.copy(COMP_DIR + junit_helpers, filepath)
+    
     shutil.copy(COMP_DIR + junit_name + ".java", filepath)
 
     print compile("-cp .:junit-4.11.jar:hamcrest-core-1.3.jar " + java_filenames + junit_helpers + " " + junit_name + ".java", filepath)
