@@ -49,7 +49,7 @@ def process_java():
     compiler_output = compile(java_files, path)
     checkstyle_output = checkstyle(java_files, path)
 
-    if junit_name != "" and junit_helper_files != "":
+    if junit_name != "":
         junit_output = junit(java_files, junit_name, junit_helper_files, path)
     else:
         junit_output = "No JUnits!"
