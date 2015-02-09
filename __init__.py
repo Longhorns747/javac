@@ -6,10 +6,9 @@ app = Flask(__name__)
 
 ALLOWED_EXTENSIONS = set(['zip'])
 
-junit_name = ""
-junit_helper_files = ""
 COMP_DIR = "javaComp/"
 pwd_dir = COMP_DIR + "pw.cfg"
+junit_dir = COMP_DIR + "junit_info.cfg"
 
 @app.route("/")
 def home():
@@ -49,7 +48,11 @@ def process_java():
     compiler_output = compile(java_files, path)
     checkstyle_output = checkstyle(java_files, path)
 
-    if junit_name != "":
+    junit_info = open(junit_dir, 'r').read()
+    junit_name = junit_info.split(',')[0]
+    junit_helper_files = junit_info.split(',')[1]
+
+    if junit_name != "NONE":
         junit_output = junit(java_files, junit_name, junit_helper_files, path)
     else:
         junit_output = "No JUnits!"
@@ -64,36 +67,45 @@ def back_to_input():
 
 @app.route("/upload", methods=['POST'])
 def ta_upload():
-    global junit_name
-    global junit_helper_files
     junit = request.files['junit']
     helper = request.files['helper']
 
     if request.form['password'] != open(pwd_dir, 'r+').read():
         return render_template("error.html", message="You entered the wrong password!")
 
+    junit_info = open(junit_dir, 'r').read()
+
+    if junit_info == '':
+        junit_info = "NONE,NONE"
+
+    junit_name = junit_info.split(',')[0]
+    junit_helpers = junit_info.split(',')[1]
+
+    f = open(junit_dir, 'w')
+
     #Reset JUnit and Helper variables
     if not junit and not helper:
         print "DID NOT GET FILES"
         #Delete old JUnit Tests
-        if os.path.exists(COMP_DIR + junit_name + ".java"):
-            os.remove(COMP_DIR + junit_name + ".java")
+        if os.path.exists(COMP_DIR + junit_name):
+            os.remove(COMP_DIR + junit_name)
 
         #Delete old JUnit Helpers
-        for fname in junit_helper_files.split():
+        for fname in junit_helpers.split():
             if os.path.exists(COMP_DIR + fname):
                 os.remove(COMP_DIR + fname)
 
-        junit_helper_files = ""
-        junit_name = ""
+        f.write('NONE,NONE')
 
         return render_template("index.html")
 
+    junit_filename = "NONE"
+    junit_helper_files = "NONE"
     #Get secure_filename for files
     if junit:
         #Delete old JUnit Tests
-        if os.path.exists(COMP_DIR + junit_name + ".java"):
-            os.remove(COMP_DIR + junit_name + ".java")
+        if os.path.exists(COMP_DIR + junit_name):
+            os.remove(COMP_DIR + junit_name)
 
         #Store new ones
         junit_filename = secure_filename(junit.filename)
@@ -101,7 +113,7 @@ def ta_upload():
         junit_name = junit_filename[:-5] #Chop off .java
 
     #Delete old JUnit Helpers
-    for fname in junit_helper_files.split():
+    for fname in junit_helpers.split():
         if os.path.exists(COMP_DIR + fname):
             os.remove(COMP_DIR + fname)
 
@@ -114,6 +126,9 @@ def ta_upload():
         junit_helper_files = ""
 
     print junit_name
+
+    f.write(junit_filename + "," + junit_helper_files)
+    f.close()
 
     return render_template("index.html")
 
@@ -185,11 +200,11 @@ def junit(java_filenames, junit_name, junit_helpers, filepath):
     if junit_helpers != "":
         shutil.copy(COMP_DIR + junit_helpers, filepath)
     
-    shutil.copy(COMP_DIR + junit_name + ".java", filepath)
+    shutil.copy(COMP_DIR + junit_name, filepath)
 
-    print compile("-cp .:junit-4.11.jar:hamcrest-core-1.3.jar " + java_filenames + junit_helpers + " " + junit_name + ".java", filepath)
+    print compile("-cp .:junit-4.11.jar:hamcrest-core-1.3.jar " + java_filenames + junit_helpers + " " + junit_name, filepath)
 
-    bashCommand = "java -cp .:junit-4.11.jar:hamcrest-core-1.3.jar org.junit.runner.JUnitCore " + junit_name
+    bashCommand = "java -cp .:junit-4.11.jar:hamcrest-core-1.3.jar org.junit.runner.JUnitCore " + junit_name[:-5] #chop off .java
 
     print bashCommand
     output = "No Errors!"
