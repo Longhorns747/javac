@@ -44,7 +44,7 @@ def process_java():
     print filename
 
     java_files = unzip(filename, staticFilepath)
-    path = staticFilepath + filename[:-4] #Chop off .zip extension
+    path = staticFilepath #Chop off .zip extension
     compiler_output = compile(java_files, path)
     checkstyle_output = checkstyle(java_files, path)
 
@@ -151,7 +151,7 @@ def unzip(filename, filepath):
         #Get names of java files in dir
         from os import listdir
         from os.path import isfile, join
-        full_path = filepath + filename[:-4]
+        full_path = filepath
         onlyfiles = [ f for f in listdir(full_path) if isfile(join(full_path,f)) ]
         print "dir: " + full_path + " Files in dir: " + str(onlyfiles)
         res = ""
