@@ -39,23 +39,27 @@ def process_java():
         filename = secure_filename(file.filename)
         file.save(os.path.join(staticFilepath, filename))
     else:
+        shutil.rmtree(staticFilepath)
         return render_template("error.html", message="Oh no D:! Something went wrong :( Please try again!")
 
     print filename
 
-    java_files = unzip(filename, staticFilepath)
-    path = staticFilepath #Chop off .zip extension
-    compiler_output = compile(java_files, path)
-    checkstyle_output = checkstyle(java_files, path)
+    try:
+        java_files = unzip(filename, staticFilepath)
+        path = staticFilepath #Chop off .zip extension
+        compiler_output = compile(java_files, path)
+        checkstyle_output = checkstyle(java_files, path)
 
-    junit_info = open(junit_dir, 'r').read()
-    junit_name = junit_info.split(',')[0]
-    junit_helper_files = junit_info.split(',')[1]
+        junit_info = open(junit_dir, 'r').read()
+        junit_name = junit_info.split(',')[0]
+        junit_helper_files = junit_info.split(',')[1]
 
-    if junit_name != "NONE":
-        junit_output = junit(java_files, junit_name, junit_helper_files, path)
-    else:
-        junit_output = "No JUnits!"
+        if junit_name != "NONE":
+            junit_output = junit(java_files, junit_name, junit_helper_files, path)
+        else:
+            junit_output = "No JUnits!"
+    except:
+        shutil.rmtree(staticFilepath)
 
     #Clean Up
     shutil.rmtree(staticFilepath)
